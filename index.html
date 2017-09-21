@@ -175,14 +175,13 @@
 /*		height: 90%;
 		width: 90%;*/
 
-		border-collapse: collapse;
+		/*border-collapse: collapse;*/
 
 
 	}
 
 	#comments_tab td {
-		padding: 10px;
-		border-bottom: 1px solid #BDBDBD;
+
 	}
 
 
@@ -275,7 +274,7 @@
 
 	<div id='comments_canvas'>
 		<div id='comments_tab_cont'>
-			<table id='comments_tab' width='100%'>
+			<table id='comments_tab' class="display" cellspacing="0" width="100%">
 				
 			</table>
 		</div>
@@ -609,8 +608,11 @@ d3.csv('https://docs.google.com/spreadsheets/d/1QJR6M693pGTl0c4povSA4IZBFquygZiS
 
 		d3.select('#nps_perc').text(nps_data['nps']+'%')
 		d3.select('#promote_perc').text(nps_data['promote_perc']+'%')
+			.style('color', 'green');
 		d3.select('#indifferent_perc').text(nps_data['indifferent_perc']+'%')
+			.style('color', 'orange');
 		d3.select('#demote_perc').text(nps_data['demote_perc']+'%')
+			.style('color', 'red');
 		d3.select('#number').text(nps_data['n'])
 		d3.select('#mean_nps').text(nps_data['mean'])
 
