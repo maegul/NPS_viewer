@@ -1,0 +1,918 @@
+<html>
+<head>
+	<title>NPS Viewer</title>
+
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<script type="text/javascript" src='https://cdn.jsdelivr.net/lodash/4.17.4/lodash.min.js'></script>
+
+
+<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.min.js"></script>
+
+<script src="jQDateRangeSlider-min.js"></script>
+
+<link rel="stylesheet" href="css/classic.css" type="text/css" />
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+
+
+<script type="text/javascript" src='https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js'></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
+
+<style type="text/css">
+	
+	#nps_filt {
+		display: flex;
+		justify-content: space-around;
+		margin-top: 50px;
+	}
+
+	#nps_filt span {
+		font-family: sans-serif;
+		text-align: right;
+	}
+
+	#tool_filt {
+		width:12em;
+	}
+
+
+
+
+	#main_nps {
+		display: flex;
+		width: 100%;
+		height: 50%;
+
+		justify-content: center;
+
+		font-family: sans-serif;
+	}
+
+	#NPS_perc_disp {
+		width: 20%;
+
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
+
+	#NPS_perc_disp table {
+		width: 100%;
+		border-top: 1px solid black;
+		border-bottom: 1px solid black;
+
+		border-collapse: collapse;
+	}
+
+
+
+	#NPS_perc_disp table th {
+		text-align: left;
+	}
+
+	#NPS_perc_disp table td {
+		text-align: right;
+	}	
+
+	#NPS_perc_disp table th,td {
+		padding: 3px;
+	}
+
+	#nps_perc {
+		width: 100%;
+		text-align: center;
+		font-size: 3em;
+	}
+
+	#NPS_hist {
+		width: 60%;
+
+	}
+
+	#all_NPS {
+
+		height: 50%;		
+
+	}
+
+	#all_NPS_comment{
+
+		font-family: sans-serif;
+
+		width: 60%;
+		height: 10%;
+		margin: auto;
+
+		display: flex;
+		flex-direction: row;
+
+		margin-bottom: 70px;
+
+		overflow: scroll;
+	}
+
+	#comment_header {
+		width: 10%;
+		margin-right: 10px;
+	}
+
+	#comments_cont {
+		z-index: 1000;
+		position: fixed;
+		top: 0;
+		left: 0;
+
+		display: none;
+
+		flex-direction: column;
+
+		justify-content: center;
+		align-items: center;
+
+		width: 100%;
+		height: 100%;
+
+		background: #7F7F7F;
+		opacity: 0.95;
+	}
+
+	#comments_canvas {
+		/*height: 97%;*/
+		width: 80%;
+
+		overflow: scroll;
+
+		background: white;
+		opacity: 0.99;
+
+		border: 1px solid black;
+
+		padding-top: 35px;
+		padding-bottom: 20px;
+		/*padding: 5%;*/
+	}
+
+	#comments_tab_cont {
+/*		height: 90%;
+		width: 65%;*/
+
+		width: 80%;
+		margin: auto;
+
+		overflow: scroll;
+
+		background: white;
+		opacity: 0.99;
+
+		font-family: sans-serif;
+	}
+
+	#comments_tab {
+/*		height: 90%;
+		width: 90%;*/
+
+		border-collapse: collapse;
+
+
+	}
+
+	#comments_tab td {
+		padding: 10px;
+		border-bottom: 1px solid #BDBDBD;
+	}
+
+
+
+
+</style>
+
+</head>
+<body>
+
+
+
+<div id='nps_filt'>
+
+	<div>
+		<span>Filter by Tool  </span> 
+
+		<select id='tool_filt'></select>
+	</div>
+
+	<div style='width: 60%'>
+		
+		<div style='width: 100%; display: flex;'>
+			<span style='width: 20%'>Filter by Date  </span>
+			<div id="slider" style='display: inline-block; width: 70%'></div>
+
+		</div>
+
+		<div style='display: flex; justify-content: center;'>
+			<button id='zoom_YTD'>See YTD</button>
+			<button id='zoom_animate_year'>See past Year</button>
+			<button id='zoom_animate_mnth'>See past Month</button>
+			<button id='zoom_animate_wk'>See past Week</button>
+		</div>
+	</div>
+
+	<div>
+		<button id='see_comments'>See Comments</button>
+	</div>
+
+</div>
+
+<div id='main_nps'>
+
+	<div id='NPS_perc_disp'>
+		<div id='nps_perc'></div>
+		<table>
+			<tr>
+				<th>Promote</th>
+				<td id='promote_perc'></td>
+			</tr>
+			<tr>
+				<th>Indifferent</th>
+				<td id='indifferent_perc'></td>
+			</tr>
+			<tr>
+				<th>Demote</th>
+				<td id='demote_perc'></td>
+			</tr>	
+			<tr style='border-top: 1px solid #BBB'>
+				<th>Number</th>
+				<td id='number'></td>
+			</tr>
+			<tr>
+				<th>Mean</th>
+				<td id='mean_nps'></td>
+			</tr>											
+		</table>
+		
+	</div>
+
+	<div id='NPS_hist'></div>
+</div>
+
+
+
+<div id='all_NPS'></div>
+
+<div id='all_NPS_comment'>
+	
+	<div id='comment_header'>Comment: </div>
+	<div id='comment_actual'></div>
+</div>
+
+
+<div id='comments_cont'>
+
+	
+	<button id='close_comments' style='margin: 10px; align-self: flex-end;'>Close</button>
+
+	<div id='comments_canvas'>
+		<div id='comments_tab_cont'>
+			<table id='comments_tab' width='100%'>
+				
+			</table>
+		</div>
+	</div>
+
+</div>
+
+<!-- Load list of tools -->
+<script type="text/javascript" src='tools.js'></script>
+
+<script type="text/javascript">
+
+
+
+d3 = Plotly.d3;
+
+var hist_plot = d3.select('#NPS_hist').node();
+var all_nps = d3.select('#all_NPS').node();
+
+var comm_act = d3.select('#comment_actual')
+					.text('Hover to see any comments given as feedback');
+
+
+// time_basic_form = d3.time.format('%d-%b-%Y');
+time_basic_form = d3.time.format('%Y/%m/%d');
+
+time_pl_form = d3.time.format('%Y-%m-%d %X');
+
+time_pl_form_no_time = d3.time.format('%Y-%m-%d')
+
+time_tt_form = d3.time.format('%a %d %b %y')
+
+function tm_pl_conv(tm){
+	return time_pl_form(new Date(tm));
+}
+
+
+function tm_pl_conv_jitt(tm){
+
+	d_tm = new Date(tm)
+	d_tm.setMinutes(d_tm.getMinutes() + (Math.random()-0.5)*240)
+
+	return time_pl_form(d_tm);
+}
+
+
+function tm_pl_ntm_conv(tm){
+	return time_pl_form_no_time(new Date(tm));
+}
+
+function tm_tt_conv(tm){
+	return time_tt_form(new Date(tm));
+}
+
+
+d3.csv('https://docs.google.com/spreadsheets/d/1QJR6M693pGTl0c4povSA4IZBFquygZiS5RuVORYs36A/export?format=csv&id=1QJR6M693pGTl0c4povSA4IZBFquygZiS5RuVORYs36A', 
+
+	function(d){
+		return {
+			time: d['Timestamp'],
+			ws: d['What training have you just attended?'],
+			score: +d['How likely are you to recommend this training to a friend or colleague?'] ,
+			comment: d['If there is something you could change about the training what would it be?']
+
+		}
+	},
+
+	function(data){
+
+	data = data;
+
+	console.log(data);
+
+	var tool_data = data.map(function(r){
+
+		var app_tool = 'other',
+			tool_re;
+
+		tools.forEach(function(tool){
+
+
+
+			if (tool == 'R'){
+				tool_re = new RegExp(/(R\W|\WR\b)/); //R+non-word OR non-word+R at end
+			} 
+			else {
+				tool_re = new RegExp(tool, 'i');
+			}
+
+
+			if (r.ws.search(tool_re) > -1){
+				app_tool = tool;
+			}
+
+		})
+
+		r.tool = app_tool;
+
+		return r;
+	})
+
+
+	console.log('tool_data', tool_data.filter(i=>i.tool=='Other').map(i => i.ws))
+
+// Master Variables for NPS Calc
+
+	var uniq_tools = _
+		.chain(tool_data)
+		.map(r=>r.tool)
+		.sortBy(t=>_.lowerCase(t))
+		.uniq()
+		.value()
+
+
+	var min_date = _
+		.chain(tool_data)
+		.map(function(d){return new Date(d.time)})
+		.min()
+		.value()
+
+	min_date.setDate(min_date.getDate() - 2);
+
+	var max_date = new Date;
+
+	var date_sel_max = new Date;
+	var date_sel_min = new Date;
+
+	date_sel_min.setFullYear(date_sel_max.getFullYear() - 1)
+
+	var tool = 'All'
+
+	// Init
+	// gen_nps_disp(tool_data);	
+
+
+	var tool_filt_opts = _.concat('All', uniq_tools);
+
+	update_nps();
+
+
+	$('#tool_filt').select2({
+		placeholder: 'Filter by a tool',
+		data: tool_filt_opts.map(function(t){
+			return {
+				id: t,
+				text: t
+			}
+		})
+	})
+
+	$('#tool_filt').on('select2:select', function(e){
+
+		console.log('current_selection', $('#tool_filt').select2('data'))
+
+		// var selected = _.map('#tool_filt').select2('data')
+
+		tool = e.params.data.text;
+
+		update_nps();
+
+	})
+
+
+
+
+
+
+
+
+    $("#slider").dateRangeSlider({
+        bounds:{
+          min: min_date,
+          max: max_date
+        },
+
+        defaultValues: {
+        	min: date_sel_min,
+        	max: date_sel_max
+        }
+
+      });
+
+
+    $('#slider').bind('valuesChanging', function(e, d){
+		console.log(d);
+		date_sel_min = d.values.min;
+		date_sel_max = d.values.max;
+
+		update_nps();
+
+
+		
+	})
+
+    $('#slider').bind('valuesChanged', function(e, d){
+		console.log(d);
+		date_sel_min = d.values.min;
+		date_sel_max = d.values.max;
+
+		update_nps();
+
+		var zoomed_layout = {
+			// xaxis: {range: [tm_pl_ntm_conv(t0), tm_pl_ntm_conv(t)]}
+			xaxis: {range: [d.values.min.valueOf(), d.values.max.valueOf()]}
+		}
+
+		Plotly.relayout(
+			all_nps,zoomed_layout
+
+		)		
+	})
+
+
+    d3.select('#see_comments').on('click', function(){
+    	console.log('see comments')
+
+    	
+
+
+    	var comments_table = d3.select('#comments_tab');
+
+    	var current_data = gen_new_data(tool_data);
+
+		var data_sorted_by_date = _
+			.chain(current_data)
+			.sortBy(function(d){return new Date(d.time)})
+			.reverse()
+			.value()
+
+		var table_head = comments_table.append('thead').append('tr');
+
+		var table_body = comments_table.append('tbody');
+
+
+		['Tool', 'date', 'NPS', 'Comment'].forEach(function(h){
+			table_head.append('th').text(h);
+		})
+
+
+
+		data_sorted_by_date.forEach(function(d){
+
+			// var new_row = comments_table.append('tr')
+
+			var new_row = table_body.append('tr');
+
+			new_row.append('td').text(d.tool)
+
+			new_row.append('td').text(time_basic_form(new Date(d.time)))
+				.style('white-space', 'nowrap')
+
+			new_row.append('td').text(d.score)
+			new_row.append('td').text(d.comment)
+
+		})
+
+    	d3.select('#comments_cont').style('display', 'flex');
+		$('#comments_tab').DataTable({
+			"order": [[ 1, "desc" ]],
+			"lengthMenu": [[30, 100, -1], [30, 100, "All"]]
+		});
+
+
+    })
+
+    d3.select('#close_comments').on('click', function(){
+    	d3.select('#comments_cont').style('display', 'none');
+
+    	$('#comments_tab').DataTable().destroy();
+
+		d3.select('#comments_tab').selectAll('*').remove()
+
+    })
+
+
+    function update_nps(){
+    	var new_data = gen_new_data(tool_data)
+    	gen_nps_disp(new_data);
+    }
+
+	function gen_new_data(data){
+		var new_data = data
+			.filter(function(d){
+				if (tool == 'All') {
+					return true;
+				}
+				else {
+					return d.tool == tool
+				}				
+			})
+			.filter(function(d){
+				var date = new Date(d.time);
+				return (date >= date_sel_min & date <= date_sel_max)
+			})
+
+		return new_data;
+	}
+
+
+	function gen_nps_data(data){
+		var nps_data = {};
+
+		nps_data['promote'] = data.map(r => r.score).filter(r=> r > 8);
+		nps_data['indifferent'] = data.map(r => r.score).filter(r=> (r < 9) & (r > 6));
+		nps_data['demote'] = data.map(r => r.score).filter(r=> (r < 7));
+
+		nps_data['n'] = data.length;
+
+		nps_data['promote_perc'] = _.round((nps_data['promote'].length / nps_data['n'])*100, 0);
+		nps_data['indifferent_perc'] = _.round((nps_data['indifferent'].length / nps_data['n'])*100, 0);
+		nps_data['demote_perc'] = _.round((nps_data['demote'].length / nps_data['n'])*100, 0);
+
+		nps_data['nps'] = _.round((nps_data['promote_perc'] - nps_data['demote_perc']), 0)
+
+		nps_data['mean'] = _.chain(data)
+							.map(r=>r.score)
+							.mean()
+							.round(1)
+							.value()
+
+		return nps_data;
+	}
+
+
+
+	function gen_nps_disp(data){
+
+		var nps_data = gen_nps_data(data);
+
+		console.log('nps_data', nps_data)
+
+		d3.select('#nps_perc').text(nps_data['nps']+'%')
+		d3.select('#promote_perc').text(nps_data['promote_perc']+'%')
+		d3.select('#indifferent_perc').text(nps_data['indifferent_perc']+'%')
+		d3.select('#demote_perc').text(nps_data['demote_perc']+'%')
+		d3.select('#number').text(nps_data['n'])
+		d3.select('#mean_nps').text(nps_data['mean'])
+
+
+
+		var hist_trc_pos = {
+			type: 'histogram',
+			autobinx: false,
+			xbins: {
+				start: -0.5,
+				end: 10.5,
+				size: 1
+			},
+			x: nps_data.promote,
+			name: 'Promote',
+			marker: {
+				color: 'green'
+			}
+		}
+
+		var hist_trc_ind = {
+			type: 'histogram',
+			autobinx: false,
+			xbins: {
+				start: -0.5,
+				end: 10.5,
+				size: 1
+			},
+			x: nps_data.indifferent,
+			name: 'Indifferent',
+			marker: {
+				color: 'orange'
+			}
+		}
+
+		var hist_trc_neg = {
+			type: 'histogram',
+			autobinx: false,
+			xbins: {
+				start: -0.5,
+				end: 10.5,
+				size: 1
+			},
+			x: nps_data.demote,
+			name: 'Demote',
+			marker: {
+				color: 'red'
+			}
+		}
+
+		var hist_layout = {
+			title: 'NPS Score Counts',
+			xaxis: {
+				tickvals: d3.range(11),
+				range: [-0.5, 10.5],
+				fixedrange: true
+			},
+			yaxis: {
+				fixedrange: true
+			},
+			showlegend: true,
+			barmode: 'overlay',
+
+			margin: {
+				b: 20
+			}
+		}
+
+
+		Plotly.newPlot(hist_plot, [hist_trc_pos, hist_trc_ind, hist_trc_neg], hist_layout, {displayModeBar: false})
+		
+	}
+
+
+ 
+// All NPS Chart
+
+
+	var all_nps_traces = [];
+
+	uniq_tools.forEach(function(tool){
+
+		var ws_data = data.filter(function(row){
+					return row['tool'] == tool;
+				})
+
+		var trace = {
+			x: ws_data
+				.map(function(row){
+
+					return tm_pl_conv_jitt(row['time']);
+
+					// var ts = row['time'];
+
+					// // [day, month, year]
+					// var date = ts.split(' ')[0].split('/');
+					// var time = ts.split(' ')[1]
+					// return date[2]+'-'+date[1]+'-'+date[0]+' '+time;
+				}),
+			y: ws_data
+				.map(function(row){
+					return row['score'] + ((Math.random()-0.5)*0.3);
+				}),
+			custom_comment: ws_data.map(function(row){return row['comment']}),
+
+			mode: 'markers',
+			opacity: 0.8,
+
+			marker: {
+				opacity: 0.7,
+				line: {
+					width: 0.7
+
+				}
+
+			},
+
+
+			name: tool,
+			hoverinfo: 'text',
+			text: ws_data.map(function(row){
+
+
+					var date = tm_tt_conv(row['time'])
+
+				return '<em>NPS:  </em>' + row['score'] +'<br>'+'<em>tool:  </em>' + tool+'<br>'+'<em>Title:  </em>' + row['ws'] + '<br>' + '<em>Date:  </em>' + date + '<br>';
+			})
+		};
+
+		all_nps_traces.push(trace);
+	})
+
+	// One year initial span
+	var now = new Date();
+
+	var then = new Date();
+	then.setFullYear(then.getFullYear() -1)
+
+
+	var all_nps_layout = {
+		hovermode: 'closest',
+		yaxis: {
+			range: [-0.5, 11],
+			showgrid: true,
+			gridwidth: 2,
+			gridcolor: '#DDE0E0',
+			zeroline: false,
+			title: 'NPS Score',
+			tickmode: 'array',
+			tickvals: d3.range(11)
+		},
+		xaxis: {
+			type: 'date',
+			showgrid: false,
+			range: [then.valueOf(), now.valueOf()]
+
+	  },
+
+	  shapes: [{
+	  	type: 'line',
+	  	x0: now.valueOf(),
+	  	x1: now.valueOf(),
+	  	y0: 0,
+	  	y1: 10.15,
+	  	line: {
+	  		color: 'grey',
+	  		dash: '5 2',
+	  		width: 1.5
+	  	}
+	  }],
+
+	  margin: {
+	  	t: 10
+	  }
+	}
+
+	Plotly.newPlot(all_nps, all_nps_traces, all_nps_layout)
+
+
+	all_nps.on('plotly_hover', function(data){
+
+		// console.log(data)
+
+		var point_n = data['points'][0]['pointNumber'];
+
+		comm_act.text(data['points'][0]['data']['custom_comment'][point_n])
+	})
+
+
+	d3.select('#zoom_animate_wk').on('click', function(){
+
+		var t = new Date;
+		var t0 = new Date;
+
+		t0.setDate(t.getDate() - 7)
+
+		console.log(t0, t)
+		console.log(tm_pl_ntm_conv(t0), tm_pl_ntm_conv(t))
+
+		var zoomed_layout = {
+			// xaxis: {range: [tm_pl_ntm_conv(t0), tm_pl_ntm_conv(t)]}
+			xaxis: {range: [t0.valueOf(), t.valueOf()]}
+		}
+
+		Plotly.relayout(
+			all_nps,zoomed_layout
+
+		)
+
+		$("#slider").dateRangeSlider("values", t0, t);
+
+
+
+	})
+
+
+	d3.select('#zoom_animate_mnth').on('click', function(){
+
+		var t = new Date;
+		var t0 = new Date;
+
+		t.setHours(t.getHours() + 2)
+
+		t0.setMonth(t.getMonth() - 1)
+
+
+
+		var zoomed_layout = {
+			// xaxis: {range: [tm_pl_ntm_conv(t0), tm_pl_ntm_conv(t)]}
+			xaxis: {range: [t0.valueOf(), t.valueOf()]}
+		}
+
+		Plotly.relayout(
+			all_nps,zoomed_layout
+
+		)
+
+		$("#slider").dateRangeSlider("values", t0, t);
+
+	})
+
+
+	d3.select('#zoom_animate_year').on('click', function(){
+
+		var t = new Date;
+		var t0 = new Date;
+
+		t.setHours(t.getHours() + 2)
+
+		t0.setFullYear(t.getFullYear() - 1)
+
+
+
+		var zoomed_layout = {
+			// xaxis: {range: [tm_pl_ntm_conv(t0), tm_pl_ntm_conv(t)]}
+			xaxis: {range: [t0.valueOf(), t.valueOf()]}
+		}
+
+		Plotly.relayout(
+			all_nps,zoomed_layout
+
+		)
+
+		$("#slider").dateRangeSlider("values", t0, t);
+
+	})
+
+
+	d3.select('#zoom_YTD').on('click', function(){
+
+		var t = new Date;
+		var t0 = new Date;
+
+		t.setHours(t.getHours() + 2)
+
+		// t0.setFullYear(t.getFullYear() - 1)
+
+		t0.setDate(1);
+		t0.setMonth(0);
+		t0.setHours(0);
+
+
+
+		var zoomed_layout = {
+			// xaxis: {range: [tm_pl_ntm_conv(t0), tm_pl_ntm_conv(t)]}
+			xaxis: {range: [t0.valueOf(), t.valueOf()]}
+		}
+
+		Plotly.relayout(
+			all_nps,zoomed_layout
+
+		)
+
+		$("#slider").dateRangeSlider("values", t0, t);
+
+	})	
+
+})
+
+
+</script>
+
+
+</body>
+</html>

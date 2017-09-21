@@ -1,0 +1,42 @@
+<!DOCTYPE>
+  <html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>example</title>
+
+  <!-- <link rel="stylesheet" id="themeCSS" href="../css/classic.css">    -->
+  <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+  <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.min.js"></script>
+  <!-- <script src="../lib/jquery.mousewheel.min.js"></script> -->
+  
+  
+  
+  <script src="jQDateRangeSlider-min.js"></script>
+  <!-- <script src="../jQAllRangeSliders-min.js"></script> -->
+
+
+
+    <link rel="stylesheet" href="css/classic.css" type="text/css" />
+  </head>
+  <body>
+    <h1>Hello world</h1>
+    <div id="slider" style='width: 70%; margin: auto'></div>
+    <!-- <script src="jquery.js"></script> -->
+    <!-- <script src="jquery-ui-1.8.16.custom.min.js"></script> -->
+    
+    <script>
+    //<!--
+      $("#slider").dateRangeSlider({
+        bounds:{
+          min: new Date(2016, 0, 1),
+          max: new Date()
+        }
+      });
+    //-->
+
+    $('#slider').bind('valuesChanging', function(e, d){
+      console.log(d);
+    })
+    </script>
+  </body>
+</html>
