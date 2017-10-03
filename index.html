@@ -208,20 +208,37 @@
 		<select id='tool_filt'></select>
 	</div>
 
-	<div style='width: 60%'>
+	<div style='width: 60%; display: flex'>
 		
-		<div style='width: 100%; display: flex;'>
-			<span style='width: 20%'>Filter by Date  </span>
-			<div id="slider" style='display: inline-block; width: 70%'></div>
+		<div style='width: 65%; display: flex; flex-direction: column'>
+
+			<div>
+				<span style='width: 20%'>Filter by Date  </span>
+				<div id="slider" style='display: inline-block; width: 70%'></div>
+			</div>
+
+			<div style='display: flex; justify-content: center;'>
+				<button id='zoom_YTD'>See YTD</button>
+				<button id='zoom_animate_year'>See past Year</button>
+				<button id='zoom_animate_mnth'>See past Month</button>
+				<button id='zoom_animate_wk'>See past Week</button>
+			</div>
 
 		</div>
 
-		<div style='display: flex; justify-content: center;'>
-			<button id='zoom_YTD'>See YTD</button>
-			<button id='zoom_animate_year'>See past Year</button>
-			<button id='zoom_animate_mnth'>See past Month</button>
-			<button id='zoom_animate_wk'>See past Week</button>
+		<div id='datepicker_cont' style='width: 25%'>
+			<div>
+				<div>Start: </div>
+				<input type="text" name="" id='start_dp'>
+			</div>
+			<div>
+				<div>End: </div>
+				<input type="text" name="" id='end_dp'>
+			</div>
 		</div>
+
+
+
 	</div>
 
 	<div>
@@ -296,6 +313,14 @@
 	$('#datepicker').datepicker(
 		{});
 </script>
+
+
+<script type="text/javascript">
+	// $( "#datepicker" ).datepicker();
+
+
+</script>
+
 
 <!-- Load list of tools -->
 <script type="text/javascript" src='tools.js'></script>
@@ -446,8 +471,6 @@ d3.csv('https://docs.google.com/spreadsheets/d/1QJR6M693pGTl0c4povSA4IZBFquygZiS
 
 		console.log('current_selection', $('#tool_filt').select2('data'))
 
-		// var selected = _.map('#tool_filt').select2('data')
-
 		tool = e.params.data.text;
 
 		update_nps();
@@ -472,68 +495,6 @@ d3.csv('https://docs.google.com/spreadsheets/d/1QJR6M693pGTl0c4povSA4IZBFquygZiS
         	max: date_sel_max
         }
 
-  //       scales: [{
-  //       	first: function(v){
-  //       		var val = new Date(v);
-
-  //       		val.setHours(0);
-  //       		val.setDate(1);
-
-  //       		return new Date(val.getTime());
-  //       	},
-  //       	next: function(v){
-  //       		var next = new Date(v);
-
-  //       		next.setHours(0);
-  //       		next.setDate(1);
-
-  //       		return new Date(next.setMonth(v.getMonth() + 1));
-  //       	},
-  //       	label: function(v){
-  //       		// return mnth_labels[v.getMonth()]
-
-  //       		if (v.getMonth() == 0){
-
-	 //        		return v.getFullYear();
-  //       		}
-  //       	},
-  //       	format: function(tickContainer, tickStart, tickEnd){
-  //       		// tickContainer.css('border-left', '1px solid black');
-  //       		// tickContainer.css('width', '1px')
-  //       	}
-  //       },
-		// {
-  //       	first: function(v){
-  //       		var val = new Date(v);
-
-  //       		val.setHours(0);
-  //       		val.setDate(1);
-
-  //       		return new Date(val.getTime());
-  //       	},
-  //       	next: function(v){
-  //       		var next = new Date(v);
-
-  //       		next.setHours(0);
-  //       		next.setDate(1);
-
-  //       		return new Date(next.setMonth(v.getMonth() + 1));
-  //       	},
-  //       	label: function(v){
-  //       		// return mnth_labels[v.getMonth()]
-
-  //       		if (v.getMonth() != 0){
-
-	 //        		return null;
-  //       		}
-  //       	},
-  //       	format: function(tickContainer, tickStart, tickEnd){
-  //       		// tickContainer.css('border-left', '1px solid black');
-  //       		// tickContainer.css('width', '1px')
-  //       	}
-  //       }
-  //       ]
-
       });
 
 
@@ -550,21 +511,51 @@ d3.csv('https://docs.google.com/spreadsheets/d/1QJR6M693pGTl0c4povSA4IZBFquygZiS
 
     $('#slider').bind('valuesChanged', function(e, d){
 		console.log(d);
+
 		date_sel_min = d.values.min;
 		date_sel_max = d.values.max;
 
+		console.log('slider, dat max', date_sel_max)
+
+		update_date_pick();		
 		update_nps();
 
-		var zoomed_layout = {
-			// xaxis: {range: [tm_pl_ntm_conv(t0), tm_pl_ntm_conv(t)]}
-			xaxis: {range: [d.values.min.valueOf(), d.values.max.valueOf()]}
-		}
-
-		Plotly.relayout(
-			all_nps,zoomed_layout
-
-		)		
+		update_all_nps_date_range();
 	})
+
+
+    var gen_dp_param = {
+    	showButtonPanel: true,
+    	changeYear: true,
+    	changeMonth: true,
+    	minDate: min_date, 
+    	maxDate: max_date,
+    	dateFormat: "d M y",
+    	onSelect: function(d, dp){
+
+    		var date_sel = $(this).datepicker( "getDate" )
+
+    		if (this.id == 'start_dp') {
+    			date_sel_min = date_sel
+    		}
+    		else {
+    			date_sel_max = date_sel
+    		}
+
+
+    		update_date_slider();
+    		update_nps();
+
+    	}
+    }
+
+	$('#start_dp').datepicker(gen_dp_param);
+	$('#end_dp').datepicker(gen_dp_param);
+
+	$('#start_dp').datepicker('setDate', date_sel_min)
+	$('#end_dp').datepicker('setDate', date_sel_max)
+
+
 
 
     d3.select('#see_comments').on('click', function(){
@@ -683,7 +674,7 @@ d3.csv('https://docs.google.com/spreadsheets/d/1QJR6M693pGTl0c4povSA4IZBFquygZiS
 
 		var nps_data = gen_nps_data(data);
 
-		console.log('nps_data', nps_data)
+		// console.log('nps_data', nps_data)
 
 		d3.select('#nps_perc').text(nps_data['nps']+'%')
 		d3.select('#promote_perc').text(nps_data['promote_perc']+'%')
@@ -881,6 +872,57 @@ d3.csv('https://docs.google.com/spreadsheets/d/1QJR6M693pGTl0c4povSA4IZBFquygZiS
 	})
 
 
+	function update_date_slider(start, end){
+
+		if (start == undefined) {
+			start = date_sel_min;
+		}
+		if (end == undefined) {
+			end = date_sel_max;
+		}
+
+		console.log('date slider', start, end)
+
+		$("#slider").dateRangeSlider("values", start, end);
+	}
+
+	function update_date_pick(start, end){
+		if (start == undefined) {
+			start = date_sel_min;
+		}
+		if (end == undefined) {
+			end = date_sel_max;
+		}
+		$('#start_dp').datepicker('setDate', start)
+		$('#end_dp').datepicker('setDate', end)
+	}
+
+	function update_date_sels(start, end){
+		update_date_slider(start, end);
+
+		update_date_pick(start, end);
+
+	}
+
+	function update_all_nps_date_range(start, end){
+		if (start == undefined) {
+			start = date_sel_min;
+		}
+		if (end == undefined) {
+			end = date_sel_max;
+		}
+		var zoomed_layout = {
+			// xaxis: {range: [tm_pl_ntm_conv(t0), tm_pl_ntm_conv(t)]}
+			xaxis: {range: [start.valueOf(), end.valueOf()]}
+		}
+
+		Plotly.relayout(
+			all_nps,zoomed_layout
+
+		)
+	}
+
+
 	d3.select('#zoom_animate_wk').on('click', function(){
 
 		var t = new Date;
@@ -891,17 +933,8 @@ d3.csv('https://docs.google.com/spreadsheets/d/1QJR6M693pGTl0c4povSA4IZBFquygZiS
 		console.log(t0, t)
 		console.log(tm_pl_ntm_conv(t0), tm_pl_ntm_conv(t))
 
-		var zoomed_layout = {
-			// xaxis: {range: [tm_pl_ntm_conv(t0), tm_pl_ntm_conv(t)]}
-			xaxis: {range: [t0.valueOf(), t.valueOf()]}
-		}
-
-		Plotly.relayout(
-			all_nps,zoomed_layout
-
-		)
-
-		$("#slider").dateRangeSlider("values", t0, t);
+		update_all_nps_date_range(t0, t)
+		update_date_sels(t0, t)
 
 
 
@@ -919,17 +952,8 @@ d3.csv('https://docs.google.com/spreadsheets/d/1QJR6M693pGTl0c4povSA4IZBFquygZiS
 
 
 
-		var zoomed_layout = {
-			// xaxis: {range: [tm_pl_ntm_conv(t0), tm_pl_ntm_conv(t)]}
-			xaxis: {range: [t0.valueOf(), t.valueOf()]}
-		}
-
-		Plotly.relayout(
-			all_nps,zoomed_layout
-
-		)
-
-		$("#slider").dateRangeSlider("values", t0, t);
+		update_all_nps_date_range(t0, t)
+		update_date_sels(t0, t)
 
 	})
 
@@ -945,17 +969,8 @@ d3.csv('https://docs.google.com/spreadsheets/d/1QJR6M693pGTl0c4povSA4IZBFquygZiS
 
 
 
-		var zoomed_layout = {
-			// xaxis: {range: [tm_pl_ntm_conv(t0), tm_pl_ntm_conv(t)]}
-			xaxis: {range: [t0.valueOf(), t.valueOf()]}
-		}
-
-		Plotly.relayout(
-			all_nps,zoomed_layout
-
-		)
-
-		$("#slider").dateRangeSlider("values", t0, t);
+		update_all_nps_date_range(t0, t)
+		update_date_sels(t0, t)
 
 	})
 
@@ -975,17 +990,17 @@ d3.csv('https://docs.google.com/spreadsheets/d/1QJR6M693pGTl0c4povSA4IZBFquygZiS
 
 
 
-		var zoomed_layout = {
-			// xaxis: {range: [tm_pl_ntm_conv(t0), tm_pl_ntm_conv(t)]}
-			xaxis: {range: [t0.valueOf(), t.valueOf()]}
-		}
+		// var zoomed_layout = {
+		// 	// xaxis: {range: [tm_pl_ntm_conv(t0), tm_pl_ntm_conv(t)]}
+		// 	xaxis: {range: [t0.valueOf(), t.valueOf()]}
+		// }
 
-		Plotly.relayout(
-			all_nps,zoomed_layout
+		// Plotly.relayout(
+		// 	all_nps,zoomed_layout
 
-		)
-
-		$("#slider").dateRangeSlider("values", t0, t);
+		// )
+		update_all_nps_date_range(t0, t)
+		update_date_sels(t0, t)
 
 	})	
 
