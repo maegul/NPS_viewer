@@ -2,23 +2,28 @@
 <head>
 	<title>NPS Viewer</title>
 
-
+<!-- plotly -->
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
+
+<!-- lodash -->
 <script type="text/javascript" src='https://cdn.jsdelivr.net/lodash/4.17.4/lodash.min.js'></script>
 
-
+<!-- jquery ui -->
 <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
 <script src="https://code.jquery.com/ui/1.10.3/jquery-ui.min.js"></script>
+<link rel="stylesheet" type="text/css" href="jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="jquery-ui.theme.min.css">
 
-<script src="jQDateRangeSlider-min.js"></script>
+<script type="text/javascript" src='jQDateRangeSlider-min.js'></script>
 
 <link rel="stylesheet" href="css/classic.css" type="text/css" />
 
+<!-- Select 2 -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
 
-
+<!-- Data table -->
 <script type="text/javascript" src='https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js'></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
 
@@ -282,6 +287,7 @@
 
 </div>
 
+
 <!-- Load list of tools -->
 <script type="text/javascript" src='tools.js'></script>
 
@@ -396,6 +402,7 @@ d3.csv('https://docs.google.com/spreadsheets/d/1QJR6M693pGTl0c4povSA4IZBFquygZiS
 		.value()
 
 	min_date.setDate(min_date.getDate() - 2);
+	min_date.setDate(1);
 
 	var max_date = new Date;
 
@@ -403,6 +410,7 @@ d3.csv('https://docs.google.com/spreadsheets/d/1QJR6M693pGTl0c4povSA4IZBFquygZiS
 	var date_sel_min = new Date;
 
 	date_sel_min.setFullYear(date_sel_max.getFullYear() - 1)
+
 
 	var tool = 'All'
 
@@ -442,7 +450,7 @@ d3.csv('https://docs.google.com/spreadsheets/d/1QJR6M693pGTl0c4povSA4IZBFquygZiS
 
 
 
-
+	var mnth_labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
 
     $("#slider").dateRangeSlider({
         bounds:{
@@ -454,6 +462,68 @@ d3.csv('https://docs.google.com/spreadsheets/d/1QJR6M693pGTl0c4povSA4IZBFquygZiS
         	min: date_sel_min,
         	max: date_sel_max
         }
+
+  //       scales: [{
+  //       	first: function(v){
+  //       		var val = new Date(v);
+
+  //       		val.setHours(0);
+  //       		val.setDate(1);
+
+  //       		return new Date(val.getTime());
+  //       	},
+  //       	next: function(v){
+  //       		var next = new Date(v);
+
+  //       		next.setHours(0);
+  //       		next.setDate(1);
+
+  //       		return new Date(next.setMonth(v.getMonth() + 1));
+  //       	},
+  //       	label: function(v){
+  //       		// return mnth_labels[v.getMonth()]
+
+  //       		if (v.getMonth() == 0){
+
+	 //        		return v.getFullYear();
+  //       		}
+  //       	},
+  //       	format: function(tickContainer, tickStart, tickEnd){
+  //       		// tickContainer.css('border-left', '1px solid black');
+  //       		// tickContainer.css('width', '1px')
+  //       	}
+  //       },
+		// {
+  //       	first: function(v){
+  //       		var val = new Date(v);
+
+  //       		val.setHours(0);
+  //       		val.setDate(1);
+
+  //       		return new Date(val.getTime());
+  //       	},
+  //       	next: function(v){
+  //       		var next = new Date(v);
+
+  //       		next.setHours(0);
+  //       		next.setDate(1);
+
+  //       		return new Date(next.setMonth(v.getMonth() + 1));
+  //       	},
+  //       	label: function(v){
+  //       		// return mnth_labels[v.getMonth()]
+
+  //       		if (v.getMonth() != 0){
+
+	 //        		return null;
+  //       		}
+  //       	},
+  //       	format: function(tickContainer, tickStart, tickEnd){
+  //       		// tickContainer.css('border-left', '1px solid black');
+  //       		// tickContainer.css('width', '1px')
+  //       	}
+  //       }
+  //       ]
 
       });
 
