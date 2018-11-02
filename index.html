@@ -36,13 +36,18 @@
 		margin-top: 50px;
 	}
 
-	#nps_filt span {
+	#nps_filt span,p {
 		font-family: sans-serif;
-		text-align: right;
+		text-align: left;
+	}
+
+	#tool_filt_cont {
+		flex-grow: 2;
 	}
 
 	#tool_filt {
-		width:12em;
+		/*width:12em;*/
+		width: 90%
 	}
 
 
@@ -202,10 +207,21 @@
 
 <div id='nps_filt'>
 
-	<div>
-		<span>Filter by Tool  </span> 
+	<div id='tool_filt_cont'>
+		<div style='width: 80%; display: flex; justify-content: space-between;'>
+			
+			<span>Filter by Tool   </span> 
+			<span>
+				
+			<button id='clear_tool_filt'>Clear</button>
+			<button id='all_tool_filt'>Select All</button>
+			</span>
 
-		<select id='tool_filt'></select>
+		</div>
+		<div>
+			<select id='tool_filt' multiple="multiple"></select>
+			
+		</div>
 	</div>
 
 	<div style='width: 60%; display: flex'>
@@ -222,6 +238,9 @@
 				<button id='zoom_animate_year'>See past Year</button>
 				<button id='zoom_animate_mnth'>See past Month</button>
 				<button id='zoom_animate_wk'>See past Week</button>
+			</div>
+
+			<div id='year_buttons' style='display: flex; justify-content: center;'>
 			</div>
 
 		</div>
@@ -393,6 +412,7 @@ d3.csv('https://docs.google.com/spreadsheets/d/1QJR6M693pGTl0c4povSA4IZBFquygZiS
 		var app_tool = 'other',
 			tool_re;
 
+		// tools = predefined set of tools to filter by, loaded from file tools.js
 		tools.forEach(function(tool){
 
 
@@ -417,7 +437,8 @@ d3.csv('https://docs.google.com/spreadsheets/d/1QJR6M693pGTl0c4povSA4IZBFquygZiS
 	})
 
 
-	console.log('tool_data', tool_data.filter(i=>i.tool=='Other').map(i => i.ws))
+	console.log('tool_data ... other', tool_data.filter(i=>i.tool=='Other').map(i => i.ws))
+	console.log('tool_data', tool_data)
 
 // Master Variables for NPS Calc
 
@@ -446,13 +467,21 @@ d3.csv('https://docs.google.com/spreadsheets/d/1QJR6M693pGTl0c4povSA4IZBFquygZiS
 	date_sel_min.setFullYear(date_sel_max.getFullYear() - 1)
 
 
-	var tool = 'All'
+	var year_range = d3.range(min_date.getFullYear(), max_date.getFullYear()+1)
+
+
+
+
+
+	// var tool = 'All'
+	var selected_tools = [];
 
 	// Init
 	// gen_nps_disp(tool_data);	
 
 
-	var tool_filt_opts = _.concat('All', uniq_tools);
+	// var tool_filt_opts = _.concat('All', uniq_tools);
+	var tool_filt_opts = uniq_tools;
 
 	update_nps();
 
@@ -467,17 +496,44 @@ d3.csv('https://docs.google.com/spreadsheets/d/1QJR6M693pGTl0c4povSA4IZBFquygZiS
 		})
 	})
 
-	$('#tool_filt').on('select2:select', function(e){
+	$('#tool_filt').on('change', function(e){
 
-		console.log('current_selection', $('#tool_filt').select2('data'))
+		var selected = $('#tool_filt').select2('data');
+		console.log('current_selection', selected)
 
-		tool = e.params.data.text;
+		selected_tools = selected.map(s => s.text)
+		console.log('selected tools', selected_tools)
+
+
+		// var tool_filt_test = _.chain(tool_data)
+		// 						.filter(function(d){
+		// 							if (tool === 'All') {
+		// 								return true;
+		// 							}
+		// 							else {
+		// 								return _.includes(selected_tools, d.tool)
+		// 							}
+		// 						})
+		// 						.value()
+		// console.log('filt test', tool_filt_test)
 
 		update_nps();
 
 	})
 
+	// $('#tool_filt').on('select2:unselect', function(){
+	// 	$('#tool_filt').select2('close')
+	// })
 
+	d3.select('#clear_tool_filt').on('click', function(){
+		$('#tool_filt').val(null).trigger('change')
+	})
+	d3.select('#all_tool_filt').on('click', function(){
+		$('#tool_filt').val(tool_filt_opts).trigger('change')
+	})
+
+
+	$('#tool_filt').val(tool_filt_opts).trigger('change')
 
 
 
@@ -628,12 +684,16 @@ d3.csv('https://docs.google.com/spreadsheets/d/1QJR6M693pGTl0c4povSA4IZBFquygZiS
 	function gen_new_data(data){
 		var new_data = data
 			.filter(function(d){
-				if (tool == 'All') {
-					return true;
-				}
-				else {
-					return d.tool == tool
-				}				
+
+				return _.includes(selected_tools, d.tool)
+				// if (_.includes(selected_tools, 'All')) {
+				// 	return true;
+				// }
+				// else {
+				// 	// return d.tool == tool
+
+				// 	return _.includes(selected_tools, d.tool)
+				// }				
 			})
 			.filter(function(d){
 				var date = new Date(d.time);
@@ -952,8 +1012,8 @@ d3.csv('https://docs.google.com/spreadsheets/d/1QJR6M693pGTl0c4povSA4IZBFquygZiS
 
 
 
-		update_all_nps_date_range(t0, t)
 		update_date_sels(t0, t)
+		update_all_nps_date_range(t0, t)
 
 	})
 
@@ -1003,6 +1063,23 @@ d3.csv('https://docs.google.com/spreadsheets/d/1QJR6M693pGTl0c4povSA4IZBFquygZiS
 		update_date_sels(t0, t)
 
 	})	
+
+
+	year_range.forEach(function(y){
+		d3.select('#year_buttons').append('button')
+			.attr('id', 'year_'+y)
+			.text(y)
+			.on('click', function(){
+				t = new Date(y+1, 0, 1)
+				t0 = new Date(y, 0, 1)
+
+				console.log('year dates', t0, t)
+
+				update_all_nps_date_range(t0, t)
+				update_date_sels(t0, t)
+			})
+
+	})
 
 })
 
