@@ -464,7 +464,10 @@ d3.csv('https://docs.google.com/spreadsheets/d/1QJR6M693pGTl0c4povSA4IZBFquygZiS
 	var date_sel_max = new Date;
 	var date_sel_min = new Date;
 
-	date_sel_min.setFullYear(date_sel_max.getFullYear() - 1)
+	// date_sel_min.setFullYear(date_sel_max.getFullYear() - 1)
+	date_sel_min.setMonth(0) // December
+	date_sel_min.setDate(1)
+	date_sel_min.setHours(0)
 
 
 	var year_range = d3.range(min_date.getFullYear(), max_date.getFullYear()+1)
@@ -876,10 +879,14 @@ d3.csv('https://docs.google.com/spreadsheets/d/1QJR6M693pGTl0c4povSA4IZBFquygZiS
 	})
 
 	// One year initial span
-	var now = new Date();
+	// var now = new Date();
 
-	var then = new Date();
-	then.setFullYear(then.getFullYear() -1)
+	// var then = new Date();
+	// then.setFullYear(then.getFullYear() -1)
+
+	// Take default date range for initial graph (should be same as sliders)		
+	var now = date_sel_max;
+	var then = date_sel_min;
 
 
 	var all_nps_layout = {
