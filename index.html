@@ -397,9 +397,9 @@ d3.csv('https://docs.google.com/spreadsheets/d/1QJR6M693pGTl0c4povSA4IZBFquygZiS
 	function(d){
 		return {
 			time: d['Timestamp'],
-			ws: d['What training have you just attended?'],
-			score: +d['How likely are you to recommend this training to a friend or colleague?'] ,
-			comment: d['If there is something you could change about the training what would it be?']
+			ws: d["What training have you just attended?"],
+			score: +d["How likely are you to recommend this session to a friend or colleague?"] ,
+			comment: d["Which learning objectives have you learned and plan on applying to your research?"]
 
 		}
 	},
